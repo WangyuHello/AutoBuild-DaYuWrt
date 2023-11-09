@@ -106,3 +106,12 @@ jobs:
       with:
         name: OpenWrt
         path: openwrt/bin
+    
+    - name : Upload
+      uses: bxb100/action-upload-webdav@v1
+      with:
+        webdav_address: ${{secrets.address}}
+        webdav_username: ${{secrets.username}}
+        webdav_password: ${{secrets.password}}
+        webdav_upload_path: "/openwrt"
+        files: "./openwrt/bin/**"
