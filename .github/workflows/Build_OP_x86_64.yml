@@ -65,15 +65,20 @@ jobs:
         ./scripts/feeds install -a
         ./scripts/feeds install -a
 
-    - name: Import external feeds - passwall
+    - name: Import external feeds
       working-directory: ./openwrt
       run: |
-       git clone https://github.com/xiaorouji/openwrt-passwall.git package/lienol
-
-    - name: Import external feeds - JerryKuKu Argon
-      working-directory: ./openwrt
-      run: |
+        git clone https://github.com/xiaorouji/openwrt-passwall.git package/lienol
         git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon-jerrykuku
+        git clone https://github.com/pexcn/openwrt-chinadns-ng.git package/chinadns-ng
+        git clone https://github.com/aa65535/openwrt-dns-forwarder.git package/dns-forwarder
+        git clone https://github.com/pexcn/openwrt-dns2tcp.git package/dns2tcp
+        git clone -b master --single-branch https://github.com/LGA1150/openwrt-fullconenat package/fullconenat
+        git clone https://github.com/pexcn/openwrt-ipt2socks.git package/ipt2socks
+        git clone https://github.com/pexcn/openwrt-portfwd.git package/portfwd
+        git clone https://github.com/pexcn/openwrt-transproxy.git package/transproxy
+        git clone https://github.com/pexcn/openwrt-vlmcsd.git package/vlmcsd
+        git clone https://github.com/pexcn-archived/openwrt-dns2socks.git package/dns2socks
 
     - name: Configuration Customization - Build_x86_64
       env:
