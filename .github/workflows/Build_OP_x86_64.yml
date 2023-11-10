@@ -11,6 +11,7 @@ name: Build_x86_64
 on: 
   repository_dispatch:
   workflow_dispatch:
+  [push]
 
 jobs:
   build:
@@ -101,17 +102,20 @@ jobs:
         echo -e "$(nproc) thread build."
         make -j$(nproc) V=s
 
+    - name: Archive files
+        run: |
+          7z a dayuwrt.7z -m0=zstd -mx3 openwrt/bin
+
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
         name: OpenWrt
-        path: openwrt/bin
-    
-    - name : Upload
-      uses: bxb100/action-upload-webdav@v1
-      with:
-        webdav_address: ${{secrets.address}}
-        webdav_username: ${{secrets.username}}
-        webdav_password: ${{secrets.password}}
-        webdav_upload_path: "/openwrt"
-        files: "./openwrt/bin/**"
+        path: dayuwrt.7z
+
+    # - name : Upload To Google Drive
+    #   uses: adityak74/google-drive-upload-git-action@main
+    #   with:
+    #     credentials: ${{ secrets.credentials }}
+    #     filename: "dayuwrt.7z"
+    #     folderId: ${{ secrets.folderId }}
+    #     overwrite: "true" # optional boolean
