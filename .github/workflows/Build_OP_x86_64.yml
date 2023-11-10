@@ -100,8 +100,8 @@ jobs:
         make -j$(nproc) V=s
 
     - name: Archive files
-        run: |
-          7z a dayuwrt.7z -m0=zstd -mx3 openwrt/bin
+      run: |
+        7z a dayuwrt.7z -m0=zstd -mx3 openwrt/bin
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
