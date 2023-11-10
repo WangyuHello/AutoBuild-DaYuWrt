@@ -100,8 +100,9 @@ jobs:
         make -j$(nproc) V=s
 
     - name: Archive files
-      run: |
-        7z a dayuwrt.7z -m0=zstd -mx3 openwrt/bin
+      uses: edgarrc/action-7z@v1
+      with:
+        args: 7z a -t7z -mx=9 dayuwrt.7z ./openwrt/bin
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
@@ -109,10 +110,16 @@ jobs:
         name: OpenWrt
         path: dayuwrt.7z
 
-    # - name : Upload To Google Drive
-    #   uses: adityak74/google-drive-upload-git-action@main
-    #   with:
-    #     credentials: ${{ secrets.credentials }}
-    #     filename: "dayuwrt.7z"
-    #     folderId: ${{ secrets.folderId }}
-    #     overwrite: "true" # optional boolean
+    # - name: Upload
+    #   run: |
+    #     curl https://rclone.org/install.sh | sudo bash
+    #     echo "
+    #     [onedrive]
+    #     type = onedrive
+    #     client_id = ${{secrets.client_id}}
+    #     client_secret = ${{secrets.client_secret}}
+    #     token = {"access_token": "", "expire"}
+    #     " >> ~/.config/rclone/rclone.conf
+    #     sudo timedatectl set-timezone "Asia/Shanghai"
+    #     rclone mkdir onedrive:/dayuwrt
+    #     rclone sync ./dayuwrt.7z onedrive:/dayuwrt
