@@ -8,10 +8,7 @@
 name: Build_x86_64
 
 # Add a button to trigger the workflow
-on: 
-  repository_dispatch:
-  workflow_dispatch:
-  [push]
+on: push
 
 jobs:
   build:
