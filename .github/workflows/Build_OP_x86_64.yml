@@ -101,7 +101,7 @@ jobs:
 
     - name: Archive files
       run: |
-        7z a -t7z -mx=9 dayuwrt.7z ./openwrt/bin
+        7z a -t7z -mx=9 dayuwrt.7z ./openwrt/bin/targets/x86/64
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
