@@ -13,3 +13,9 @@ sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-se
 
 #3. Replace with JerryKuKu’s Argon
 #rm openwrt/package/lean/luci-theme-argon -rf
+
+# 修改默认主机名
+sed -i '/uci commit system/iuci set system.@system[0].hostname='wangyu-router'' package/lean/default-settings/files/zzz-default-settings
+ 
+# 修改默认主题
+sed -i "s/luci-theme-bootstrap/luci-theme-argon/g" feeds/luci/collections/luci/Makefile
