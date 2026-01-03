@@ -186,8 +186,8 @@ jobs:
       env:
         TUNNEL_CONFIG: ${{ secrets.TUNNEL_CONFIG }}
       run: |
-        wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.18/mihomo-linux-amd64-v3-v1.19.18.deb
-        apt install ./mihomo-linux-amd64-v3-v1.19.18.deb
+        wget -q https://github.com/MetaCubeX/mihomo/releases/download/v1.19.18/mihomo-linux-amd64-v3-v1.19.18.deb
+        sudo apt install ./mihomo-linux-amd64-v3-v1.19.18.deb
         nohup mihomo -config $TUNNEL_CONFIG &
 
     - name: Upload WebDAV
