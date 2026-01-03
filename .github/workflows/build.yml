@@ -176,8 +176,27 @@ jobs:
       run: |
         7z a -t7z -mx=9 dayuwrt-$CONFIG-$VERSION.7z ./openwrt/bin
 
-    - name : Upload artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
         name: DaYuWRT
         include: '*.7z'
+
+    - name: Setup Tunnel
+      env:
+        TUNNEL_CONFIG: ${{ secrets.TUNNEL_CONFIG }}
+      run: |
+        wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.18/mihomo-linux-amd64-v3-v1.19.18.deb
+        apt install ./mihomo-linux-amd64-v3-v1.19.18.deb
+        nohup mihomo -config $TUNNEL_CONFIG &
+
+    - name: Upload WebDAV
+      uses: bxb100/action-upload@main
+      with:
+        provider: webdav
+        provider_options: |
+          endpoint=${{ secrets.WEBDAV_ENDPOINT }}
+          username=${{ secrets.WEBDAV_USERNAME }}
+          password=${{ secrets.WEBDAV_PASSWORD }}
+          root=${{ secrets.WEBDAV_DIR }}
+        include: './*.7z'
