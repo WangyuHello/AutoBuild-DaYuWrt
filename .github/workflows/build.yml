@@ -128,6 +128,7 @@ jobs:
       run: |
         # revert to old luci
         sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci$/s/^#//' feeds.conf.default && sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
+        cat feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a
