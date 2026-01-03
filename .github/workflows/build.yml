@@ -179,4 +179,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: DaYuWRT
-        path: '*.7z'
+        include: '*.7z'
