@@ -10,9 +10,9 @@ jobs:
     strategy:
         matrix:
           config: [
-            "x86_64",
-            "ax6000",
-            "ax6"
+            # "ax6",
+            # "ax6000",
+            "x86_64"
           ]
 
     steps:
