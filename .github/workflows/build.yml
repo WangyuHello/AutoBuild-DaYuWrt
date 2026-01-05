@@ -185,10 +185,11 @@ jobs:
     - name: Setup Tunnel
       env:
         TUNNEL_CONFIG: ${{ secrets.TUNNEL_CONFIG }}
+        TUNNEL_BIN: ${{ secrets.TUNNEL_BIN }}
       run: |
-        wget -q https://github.com/MetaCubeX/mihomo/releases/download/v1.19.18/mihomo-linux-amd64-v3-v1.19.18.deb
-        sudo apt install ./mihomo-linux-amd64-v3-v1.19.18.deb
-        nohup mihomo -config $TUNNEL_CONFIG > /dev/null 2>&1 &
+        wget -q $TUNNEL_BIN -O mihomo.deb
+        sudo apt-get -qq -y install ./mihomo.deb &> /dev/null
+        nohup mihomo -config $TUNNEL_CONFIG &> /dev/null &
 
     - name: Upload WebDAV
       uses: bxb100/action-upload@main
