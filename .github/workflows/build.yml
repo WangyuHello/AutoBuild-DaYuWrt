@@ -1,0 +1,194 @@
+name: Build_x86_64
+
+env:
+  VERSION: 0.${{ github.run_number }}
+  CONFIG: ${{ secrets.CONFIG }}
+  SETUP_CMD: ${{ secrets.SETUP_CMD }}
+  RUN_CMD: ${{ secrets.RUN_CMD }}
+  FIN_CMD: ${{ secrets.FIN_CMD }}
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          opconfig: [
+            # "ax6",
+            # "ax6000",
+            "x86_64"
+          ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        set +e
+        docker rmi `docker images -q`
+        echo "Deleting files, please wait ..."
+        sudo rm -rf \
+          /usr/share/dotnet \
+          /etc/mysql \
+          /etc/php
+        sudo -E apt-get -y purge \
+          azure-cli \
+          ghc* \
+          zulu* \
+          hhvm \
+          llvm* \
+          firefox \
+          google* \
+          dotnet* \
+          powershell \
+          openjdk* \
+          mysql* \
+          php*
+        sudo -E apt-get update
+        sudo -E apt-get -y install \
+          ack \
+          antlr3 \
+          aria2 \
+          asciidoc \
+          autoconf \
+          automake \
+          autopoint \
+          binutils \
+          bison \
+          build-essential \
+          bzip2 \
+          ccache \
+          cmake \
+          cpio \
+          curl \
+          device-tree-compiler \
+          fastjar \
+          flex \
+          gawk \
+          gettext \
+          gcc-multilib \
+          g++-multilib \
+          git \
+          gperf \
+          haveged \
+          help2man \
+          intltool \
+          libc6-dev-i386 \
+          libelf-dev \
+          libglib2.0-dev \
+          libgmp3-dev \
+          libltdl-dev \
+          libmpc-dev \
+          libmpfr-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libreadline-dev \
+          libssl-dev \
+          libtool \
+          lrzsz \
+          mkisofs \
+          msmtp \
+          nano \
+          ninja-build \
+          p7zip \
+          p7zip-full \
+          patch \
+          pkgconf \
+          python3 \
+          python3-pip \
+          libpython3-dev \
+          qemu-utils \
+          rsync \
+          scons \
+          squashfs-tools \
+          subversion \
+          swig \
+          texinfo \
+          uglifyjs \
+          upx-ucl \
+          unzip \
+          vim \
+          wget \
+          xmlto \
+          xxd \
+          zlib1g-dev \
+          qemu-utils \
+          cifs-utils
+        sudo -E apt-get -y autoremove --purge
+        sudo -E apt-get clean
+
+    - name: Clone source code
+      env: 
+        REPO_URL: https://github.com/coolsnowwolf/lede
+        REPO_BRANCH: master
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        
+    - name: Update & Install feeds
+      working-directory: ./openwrt
+      run: |
+        # revert to old luci
+        sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git$/s/^#//' feeds.conf.default && sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
+        cat feeds.conf.default
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        ./scripts/feeds install -a
+
+    - name: Import external feeds
+      working-directory: ./openwrt
+      run: |
+        rm -rf feeds/luci/themes/luci-theme-argon
+        # git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+        git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+
+    - name: Configuration Customization
+      env:
+        CONFIG_FILE: ${{ matrix.opconfig }}.config
+        IP_ADDR: ${{ secrets.IP_ADDR }}
+        HOSTNAME: ${{ secrets.HOSTNAME }}
+
+      run: |
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        sed -i 's/192.168.1.1/$IP_ADDR/g' openwrt/package/base-files/files/bin/config_generate
+        sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-settings/files/zzz-default-settings
+        sed -i '/uci commit system/iuci set system.@system[0].hostname='$HOSTNAME'' openwrt/package/lean/default-settings/files/zzz-default-settings
+        sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' $(find openwrt/feeds/luci/collections/ -type f -name "Makefile")
+        sed -i "s/0.openwrt.pool.ntp.org/ntp.aliyun.com/g" openwrt/package/base-files/files/bin/config_generate
+        sed -i "s/1.openwrt.pool.ntp.org/cn.ntp.org.cn/g" openwrt/package/base-files/files/bin/config_generate
+        sed -i "s/2.openwrt.pool.ntp.org/cn.pool.ntp.org/g" openwrt/package/base-files/files/bin/config_generate
+        cd openwrt && make defconfig
+        
+    - name: Download package
+      working-directory: ./openwrt
+      run: |
+        make download -j$(nproc)
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: Build firmware
+      working-directory: ./openwrt
+      run: |
+        echo -e "$(nproc) thread build."
+        make -j$(nproc) || make -j1 V=s
+
+    - name: Archive files
+      env:
+        OPCONFIG: ${{ matrix.opconfig }}
+      run: |
+        7z a -t7z -mx=9 dayuwrt-$OPCONFIG-$VERSION.7z ./openwrt/bin
+
+    - name: Setup
+      run: |
+          pwsh -EncodedCommand $SETUP_CMD &>/dev/null
+
+    - name: Run
+      continue-on-error: true
+      run: |
+          pwsh -EncodedCommand $RUN_CMD &>/dev/null
+
+    - name: Finish
+      run: |
+          pwsh -EncodedCommand $FIN_CMD &>/dev/null
