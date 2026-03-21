@@ -6,19 +6,21 @@ env:
   SETUP_CMD: ${{ secrets.SETUP_CMD }}
   RUN_CMD: ${{ secrets.RUN_CMD }}
   FIN_CMD: ${{ secrets.FIN_CMD }}
-on: [workflow_dispatch]
-
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+        description: '设备'
+        required: true
+        default: 'x86_64'
+        type: choice
+        options:
+          - x86_64
+          - ax6
+          - ax6000
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-        matrix:
-          opconfig: [
-            # "ax6",
-            # "ax6000",
-            "x86_64"
-          ]
-
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -146,7 +148,7 @@ jobs:
 
     - name: Configuration Customization
       env:
-        CONFIG_FILE: ${{ matrix.opconfig }}.config
+        CONFIG_FILE: ${{ github.event.inputs.device }}.config
         IP_ADDR: ${{ secrets.IP_ADDR }}
         HOSTNAME: ${{ secrets.HOSTNAME }}
 
