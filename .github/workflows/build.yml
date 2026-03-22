@@ -194,7 +194,7 @@ jobs:
 
     - name: Archive files
       env:
-        OPCONFIG: ${{ matrix.opconfig }}
+        OPCONFIG: ${{ github.event.inputs.device }}.config
       run: |
         7z a -t7z -mx=9 dayuwrt-$OPCONFIG-$VERSION.7z ./openwrt/bin
 
