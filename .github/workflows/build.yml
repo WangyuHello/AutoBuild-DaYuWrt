@@ -18,6 +18,9 @@ on:
           - x86_64
           - ax6
           - ax6000
+      commit:
+        description: '版本号'
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -137,6 +140,15 @@ jobs:
         REPO_BRANCH: main
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+
+    - name: Checkout version
+      if: github.event.inputs.commit != ''
+      env:
+        COMMIT: ${{github.event.inputs.commit}}
+      working-directory: openwrt
+      run: |
+        echo $COMMIT
+        git checkout $COMMIT
         
     - name: Update & Install feeds
       working-directory: ./openwrt
