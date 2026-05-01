@@ -147,7 +147,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         echo $COMMIT
-        git checkout $COMMIT
+        git reset --hard $COMMIT
         
     - name: Update & Install feeds
       working-directory: ./openwrt
