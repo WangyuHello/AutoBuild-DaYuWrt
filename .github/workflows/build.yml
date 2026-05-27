@@ -213,7 +213,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dayuwrt
-        path: *.7z
+        path: "*.7z"
         retention-days: 5
         if-no-files-found: error
 
