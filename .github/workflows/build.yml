@@ -209,6 +209,14 @@ jobs:
       run: |
         7z a -t7z -mx=9 dayuwrt-$OPCONFIG-$VERSION.7z ./openwrt/bin
 
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dayuwrt
+        path: *.7z
+        retention-days: 5
+        if-no-files-found: error
+
     - name: Setup
       run: |
           pwsh -EncodedCommand $SETUP_CMD &>/dev/null
@@ -221,3 +229,4 @@ jobs:
     - name: Finish
       run: |
           pwsh -EncodedCommand $FIN_CMD &>/dev/null
+  
