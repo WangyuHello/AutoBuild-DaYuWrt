@@ -208,6 +208,7 @@ jobs:
         OPCONFIG: ${{ github.event.inputs.device }}
       run: |
         7z a -t7z -mx=9 dayuwrt-$OPCONFIG-$VERSION.7z ./openwrt/bin
+        7z a -t7z -mx=9 dayuwrt-ext4-$OPCONFIG-$VERSION.7z ./openwrt/bin/targets/x86/64/openwrt-x86-64-generic-ext4-combined-efi.img
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
