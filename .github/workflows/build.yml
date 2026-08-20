@@ -17,6 +17,7 @@ on:
         options:
           - x86_64
           - ax6
+          - ax6_taobao
           - ax6000
       commit:
         description: '版本号'
