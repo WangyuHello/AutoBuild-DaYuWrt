@@ -2,10 +2,6 @@ name: Build
 
 env:
   VERSION: 0.${{ github.run_number }}
-  CONFIG: ${{ secrets.CONFIG }}
-  SETUP_CMD: ${{ secrets.SETUP_CMD }}
-  RUN_CMD: ${{ secrets.RUN_CMD }}
-  FIN_CMD: ${{ secrets.FIN_CMD }}
 on:
   workflow_dispatch:
     inputs:
