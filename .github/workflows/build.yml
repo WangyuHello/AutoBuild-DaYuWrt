@@ -175,7 +175,7 @@ jobs:
         HOSTNAME: ${{ secrets.HOSTNAME }}
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        sed -i 's/192.168.1.1/$IP_ADDR/g' openwrt/package/base-files/files/bin/config_generate
+        # sed -i 's/192.168.1.1/$IP_ADDR/g' openwrt/package/base-files/files/bin/config_generate
         sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' $(find openwrt/feeds/luci/collections/ -type f -name "Makefile")
         sed -i "s/0.openwrt.pool.ntp.org/ntp.aliyun.com/g" openwrt/package/base-files/files/bin/config_generate
         sed -i "s/1.openwrt.pool.ntp.org/cn.ntp.org.cn/g" openwrt/package/base-files/files/bin/config_generate
@@ -209,7 +209,6 @@ jobs:
         OPCONFIG: ${{ github.event.inputs.device }}
       run: |
         7z a -t7z -mx=9 dayuwrt-$OPCONFIG-$VERSION.7z ./openwrt/bin
-        # 7z a -t7z -mx=9 dayuwrt-ext4-$OPCONFIG-$VERSION.7z ./openwrt/bin/targets/x86/64/openwrt-x86-64-generic-ext4-combined-efi.img
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
@@ -218,17 +217,4 @@ jobs:
         path: "*.7z"
         retention-days: 5
         if-no-files-found: error
-
-    - name: Setup
-      run: |
-          pwsh -EncodedCommand $SETUP_CMD &>/dev/null
-
-    - name: Run
-      continue-on-error: true
-      run: |
-          pwsh -EncodedCommand $RUN_CMD &>/dev/null
-
-    - name: Finish
-      run: |
-          pwsh -EncodedCommand $FIN_CMD &>/dev/null
   
