@@ -157,13 +157,6 @@ jobs:
         ./scripts/feeds install -a
         ./scripts/feeds install -a
 
-    - name: Import external feeds
-      working-directory: ./openwrt
-      run: |
-        rm -rf feeds/luci/themes/luci-theme-argon
-        git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
-        # git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
-
     - name: Configuration Customization
       env:
         CONFIG_FILE: ${{ github.event.inputs.device }}.config
@@ -172,7 +165,6 @@ jobs:
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         # sed -i 's/192.168.1.1/$IP_ADDR/g' openwrt/package/base-files/files/bin/config_generate
-        sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' $(find openwrt/feeds/luci/collections/ -type f -name "Makefile")
         sed -i "s/0.openwrt.pool.ntp.org/ntp.aliyun.com/g" openwrt/package/base-files/files/bin/config_generate
         sed -i "s/1.openwrt.pool.ntp.org/cn.ntp.org.cn/g" openwrt/package/base-files/files/bin/config_generate
         sed -i "s/2.openwrt.pool.ntp.org/cn.pool.ntp.org/g" openwrt/package/base-files/files/bin/config_generate
