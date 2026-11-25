@@ -157,6 +157,12 @@ jobs:
         ./scripts/feeds install -a
         ./scripts/feeds install -a
 
+    - name: Import external feeds
+      working-directory: ./openwrt
+      run: |
+        # OxiDNS 的 LuCI 界面，pin tag v0.1.4（最新 release），不跟 main 分支
+        git clone -b v0.1.4 --depth 1 https://github.com/svenshi/luci-app-oxidns.git package/luci-app-oxidns
+
     - name: Configuration Customization
       env:
         CONFIG_FILE: ${{ github.event.inputs.device }}.config
